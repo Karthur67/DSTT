@@ -1,0 +1,107 @@
+% =====================================================================
+%  Project 3 - Matrix multiplication, inversion, and photo filters
+%  Overleaf: New Project > Upload Project > chọn file bao_cao.zip
+%  Compiler: pdfLaTeX (mặc định của Overleaf). Biên dịch: Recompile.
+%  Mỗi người chỉ sửa file của mình trong sections/ (tên người viết ghi ở đầu file).
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+% Tiếng Việt cho họ tên: Overleaf có sẵn gói T5. Máy không có thì dùng T1.
+\IfFileExists{t5enc.def}{\usepackage[T5,T1]{fontenc}}{\usepackage[T1]{fontenc}}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx,float,booktabs,array,caption,subcaption}
+\usepackage{xcolor,listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+
+\graphicspath{{figures/}}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+
+% ---- ghi chú việc còn thiếu (xóa hết trước khi nộp) ----
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\writer}[1]{\marginpar{\footnotesize\textcolor{gray}{#1}}}
+% Trước khi nộp: bỏ dấu % ở dòng dưới để ẩn mọi TODO và tên người viết
+% \renewcommand{\todo}[1]{}\renewcommand{\writer}[1]{}
+
+% ---- định dạng code Python ----
+\lstset{language=Python, basicstyle=\ttfamily\footnotesize, numbers=left,
+  numberstyle=\tiny\color{gray}, keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!40!black}\itshape, stringstyle=\color{red!60!black},
+  frame=single, breaklines=true, columns=fullflexible, showstringspaces=false,
+  upquote=true, inputencoding=utf8, extendedchars=true,
+  literate={≥}{{$\geq$}}1 {≤}{{$\leq$}}1 {→}{{$\to$}}1 {−}{{-}}1}
+
+\begin{document}
+
+% ============================ TRANG BÌA ============================
+\begin{titlepage}
+\centering
+{\large HO CHI MINH CITY UNIVERSITY OF TECHNOLOGY\par}
+{\large FACULTY OF APPLIED SCIENCE\par}   % \todo{kiểm tra tên khoa}
+\vspace{2.5cm}
+{\Large LINEAR ALGEBRA (MT1007)\par}
+\vspace{0.8cm}
+{\LARGE\bfseries Project 3\\[4pt] Matrix Multiplication, Inversion,\\ and Photo Filters\par}
+\vspace{2cm}
+\begin{tabular}{lll}
+\toprule
+ & Full name & Student ID \\
+\midrule
+1 & Ho ten TV1 (leader) & 0000000 \\
+2 & Ho ten TV2 & 0000000 \\
+3 & Ho ten TV3 & 0000000 \\
+4 & Ho ten TV4 & 0000000 \\
+5 & Ho ten TV5 & 0000000 \\
+6 & Ho ten TV6 & 0000000 \\
+7 & Ho ten TV7 & 0000000 \\
+\bottomrule
+\end{tabular}
+
+\vspace{1.2cm}
+Class: \todo{lớp} \qquad Instructor: \todo{tên giảng viên}
+\vfill
+{Ho Chi Minh City, \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\input{sections/01_problem}
+\input{sections/02_theory}
+\input{sections/03_code}
+\input{sections/04_examples}
+\input{sections/05_comments}
+
+\clearpage
+\appendix
+\section{Full source code \texttt{lab03.py}}\label{app:code}
+\IfFileExists{code/lab03.py}
+  {\lstinputlisting{code/lab03.py}}
+  {\todo{TV1 chép lab03.py (bản cuối) vào thư mục code/}}
+
+\section{Work distribution}
+% TV1 cập nhật bảng này theo phân công thật
+\begin{tabular}{>{\raggedright}p{3.2cm}p{5.6cm}p{5.6cm}}
+\toprule
+Member & Code & Report \\
+\midrule
+TV1 (leader) & Task 1--2, merging, final version, submission & Sec.~\ref{sec:code}, PDF export \\
+TV2 & Task 4, 11; shared functions; Q1, Q4 & Sec.~\ref{sec:theory-filters} \\
+TV3 & Task 5, 13; Q6 & Sec.~\ref{sec:theory-cond} \\
+TV4 & Task 3, 6; Q2; first test run & Sec.~\ref{sec:ex-material} \\
+TV5 & Task 7, 14; progress tracking & Sec.~\ref{sec:problem}, references \\
+TV6 & Task 9, 10; Q3; final test run & Sec.~\ref{sec:ex-extra} \\
+TV7 & Task 8, 12; Q5 & Sec.~\ref{sec:theory-inverse}, \ref{sec:comments} \\
+\bottomrule
+\end{tabular}
+
+\clearpage
+% ======================= 6. REFERENCES (TV5) =======================
+\nocite{zemlyanova2020,strang2016}  % tài liệu chính của đề, luôn liệt kê
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}

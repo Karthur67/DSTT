@@ -1,0 +1,53 @@
+% =====================================================================
+%  4. ILLUSTRATIVE EXAMPLE
+%  Đề: dùng ví dụ trong tài liệu để kiểm tra code đúng; XÂY DỰNG hoặc TÌM
+%  thêm dữ liệu làm ví dụ.
+%  Hình và bảng do vi_du_them.py tạo trong figures/ - chạy lại script là cập nhật.
+% =====================================================================
+\section{Illustrative examples}\label{sec:examples}
+
+% ---------------------------------------------------------------------
+\subsection{The example in the material: \texttt{daylilies.jpg}}\label{sec:ex-material}
+\writer{TV4}   % Hạn nháp: N6
+% Gợi ý: mỗi task 1-2 câu + câu trả lời Q1-Q6 (viết lại, không dán từ code),
+% so khớp với Fig. 5, Fig. 6 của đề, số liệu m, n, l, det, cond.
+\todo{trình bày kết quả 14 task}
+
+\IfFileExists{figures/luoi_daylilies.png}{
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{luoi_daylilies.png}
+\caption{Filters of Tasks 4--14 applied to the image in the material.}\label{fig:grid-daylilies}
+\end{figure}
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{khoi_phuc_daylilies.png}
+\caption{Inverting the User filter (Task 12) and the sepia filter (Task 13).}\label{fig:restore-daylilies}
+\end{figure}}{\todo{chạy vi\_du\_them.py khi đã có 00\_DeBai/daylilies.jpg}}
+
+\begin{table}[H]\centering
+\caption{Determinant and condition number of every filter matrix.}\label{tab:matrices}
+\IfFileExists{figures/bang_ma_tran.tex}{\input{figures/bang_ma_tran.tex}}{\todo{chạy vi\_du\_them.py}}
+\end{table}
+
+% ---------------------------------------------------------------------
+\subsection{Additional data built and collected by the group}\label{sec:ex-extra}
+\writer{TV6}   % Hạn nháp: N6
+% Gợi ý:
+%  - Ảnh tổng hợp (bang_mau.png): dải màu thuần + dải xám do nhóm tự xây,
+%    cho thấy rõ từng ma trận làm gì với từng màu, vì sao UserMatrix giữ nguyên xám.
+%  - 2-3 ảnh nhóm tự chụp / tìm (ghi nguồn + giấy phép), bỏ vào 05_DuLieuThem/.
+%  - Nhận xét bảng khôi phục: User khôi phục gần đúng mọi ảnh, Sepia thì không;
+%    ảnh nào bị cắt giá trị nhiều nhất, vì sao.
+\todo{mô tả dữ liệu thêm và nhận xét}
+
+\IfFileExists{figures/luoi_bang_mau.png}{
+\begin{figure}[H]\centering
+\includegraphics[width=0.55\textwidth]{bang_mau.png}
+\caption{Synthetic color chart built by the group: pure hues from dark to bright, and a gray ramp.}\label{fig:chart}
+\end{figure}}{}
+
+\IfFileExists{figures/hinh_du_lieu_them.tex}{\input{figures/hinh_du_lieu_them.tex}}{}
+
+\begin{table}[H]\centering\small
+\caption{Recovering images with the inverse filters (errors on the 0--255 scale) and share of channel values clipped to $[0,255]$.}\label{tab:restore}
+\IfFileExists{figures/bang_khoi_phuc.tex}{\input{figures/bang_khoi_phuc.tex}}{\todo{chạy vi\_du\_them.py}}
+\end{table}

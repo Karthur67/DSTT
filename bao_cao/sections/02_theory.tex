@@ -1,0 +1,42 @@
+% =====================================================================
+%  2. THEORETICAL FOUNDATION
+%  Đề yêu cầu: kiến thức cần để giải bài toán, PHẢI tự nghiên cứu và tự viết,
+%  KHÔNG sao chép (kể cả từ file lời giải của nhóm, sách, web hay AI).
+%  Mỗi người viết một mục, mỗi mục có ít nhất 1 ví dụ tính tay nhỏ.
+% =====================================================================
+\section{Theoretical foundation}\label{sec:theory}
+
+% ---------------------------------------------------------------------
+\subsection{Color images as arrays and linear color filters}\label{sec:theory-filters}
+\writer{TV2}   % Hạn nháp: N6
+% Gợi ý nội dung:
+%  - ảnh = mảng m x n x 3; kiểu uint8, vì sao cần đổi sang số thực (Q1)
+%  - pixel p = [R;G;B]; bộ lọc tuyến tính p' = M p; vì sao (M p^T)^T = p M^T
+%    cho phép tính cả ảnh bằng một phép nhân ma trận
+%  - ý nghĩa từng hàng / cột của M; ma trận đường chéo (Saturate), ma trận
+%    hoán vị (Permute), phép chiếu (Red, DeleteGreen, Gray)
+%  - phép biến đổi KHÔNG tuyến tính: đảo màu (affine), gamma (Task 9, 14)
+%  - làm tròn và cắt về [0, 255] sau khi lọc
+\todo{viết mục 2.1}
+
+% ---------------------------------------------------------------------
+\subsection{Determinant, inverse matrix and invertible filters}\label{sec:theory-inverse}
+\writer{TV7}   % Hạn nháp: N6
+% Gợi ý nội dung:
+%  - định nghĩa ma trận nghịch đảo; điều kiện khả nghịch (det khác 0,
+%    các hàng/cột độc lập tuyến tính)
+%  - cách tính det và nghịch đảo ma trận 3x3 (ví dụ tay với UserMatrix)
+%  - ý nghĩa: bộ lọc khả nghịch thì về lý thuyết đảo ngược được (Q5)
+%  - ma trận suy biến (Gray, Red, DeleteGreen) làm mất thông tin gì
+\todo{viết mục 2.2}
+
+% ---------------------------------------------------------------------
+\subsection{Eigenvalues, conditioning and numerical inversion}\label{sec:theory-cond}
+\writer{TV3}   % Hạn nháp: N6
+% Gợi ý nội dung:
+%  - trị riêng, vector riêng; phân tích UserMatrix (vì sao nó kéo màu về xám)
+%  - chuẩn ma trận, số điều kiện cond(M); sai số đầu vào bị khuếch đại
+%    tối đa cond(M) lần
+%  - vì sao det nhỏ chưa đủ để kết luận, cond mới là thước đo đúng
+%  - áp vào SepiaMatrix: các hàng gần tỉ lệ -> gần suy biến (Q6)
+\todo{viết mục 2.3}

@@ -1,0 +1,111 @@
+% =====================================================================
+%  3. CODE  -  Người viết: TV1
+%  Bản nháp: TV1 đọc lại, sửa bằng lời của mình trước khi gửi TV5.
+% =====================================================================
+\section{Code}\label{sec:code}\writer{TV1}
+
+The project was implemented in Python instead of MATLAB, as recommended in the
+assignment, because Python is open source and free of licensing issues. The
+whole program is a single script, \texttt{lab03.py}, listed in
+Appendix~\ref{app:code}. It keeps the variable names of the original MATLAB
+project (\texttt{ImJPG}, \texttt{redChannel}, \texttt{ImJPG\_Gray}, \dots) so
+that each result can be matched with the corresponding task.
+
+\subsection{Environment}
+The code needs Python~3 and three libraries:
+\begin{itemize}
+  \item \textbf{NumPy}~\cite{harris2020numpy}: arrays and matrix operations
+        (\texttt{@}, \texttt{linalg.det}, \texttt{linalg.inv}, \texttt{linalg.cond});
+  \item \textbf{Pillow}: reading the image file \texttt{daylilies.jpg};
+  \item \textbf{Matplotlib}~\cite{hunter2007matplotlib}: displaying the images.
+\end{itemize}
+They are installed and the program is run with:
+\begin{lstlisting}[language=bash,numbers=none]
+pip install numpy matplotlib pillow
+python lab03.py      # daylilies.jpg must be in the same folder
+\end{lstlisting}
+
+\subsection{Program structure}
+The script has two parts. The first part imports the libraries and defines
+three shared functions used by every task. The second part contains the
+14 tasks in order; each task starts with a cell marker \texttt{\# \%\% Task k},
+so it can be run on its own in VS Code or Spyder. The answers to questions
+Q1--Q6 are written as comments directly under the related task. All figures
+are shown at once by \texttt{plt.show()} at the end of the file.
+
+Since the seven members wrote their tasks in separate files
+(\texttt{part1.py}, \dots, \texttt{part7.py}), a small helper script,
+\texttt{ghep\_file.py}, merges them into \texttt{lab03.py}: it keeps the shared
+part only once, puts the tasks in the order 1 to 14 (Task 12 needs a variable
+from Task 11, and Task 13 one from Task 5), and checks that every variable
+required by the assignment exists.
+
+Table~\ref{tab:matlab-python} lists the main MATLAB commands of the project
+and the Python code used instead.
+
+\begin{table}[H]\centering\small
+\caption{MATLAB commands of the project and their Python equivalents.}
+\label{tab:matlab-python}
+\begin{tabular}{lll}
+\toprule
+MATLAB & Python & Remark \\
+\midrule
+\texttt{imread('daylilies.jpg')} & \texttt{np.array(Image.open(...).convert("RGB"))} & array $m\times n\times 3$, uint8 \\
+\texttt{[m,n,l] = size(ImJPG)} & \texttt{m, n, l = ImJPG.shape} & \\
+\texttt{ImJPG(:,:,1)} & \texttt{ImJPG[:, :, 0]} & indices start at 0 \\
+\texttt{A*B} & \texttt{A @ B} & \texttt{A * B} is element-wise \\
+\texttt{double(x)} & \texttt{x.astype(np.float64)} & \\
+\texttt{uint8(x)} & \texttt{to\_uint8(x)} & own function \\
+\texttt{inv, det, cond} & \texttt{np.linalg.inv, det, cond} & \\
+\texttt{figure; imshow; title} & \texttt{show(img, title)} & own function \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key functions}
+
+\paragraph{\texttt{to\_uint8(x)}.}
+MATLAB's \texttt{uint8} rounds a number to the nearest integer and saturates
+it to $[0,255]$, e.g.\ \texttt{uint8(260)} gives 255. In NumPy,
+\texttt{.astype(np.uint8)} does not saturate but wraps around modulo 256
+(260 becomes 4), which would create wrong colored spots in bright areas.
+The function therefore rounds halves away from zero, as MATLAB does, and
+clips the result explicitly:
+\begin{lstlisting}
+def to_uint8(x):
+    x = np.sign(x) * np.floor(np.abs(x) + 0.5)
+    return np.clip(x, 0, 255).astype(np.uint8)
+\end{lstlisting}
+
+\paragraph{\texttt{apply\_filter(img, M)}.}
+A filter multiplies the color vector $p=[R;G;B]$ of every pixel by a
+$3\times3$ matrix $M$. The MATLAB project does this with two nested loops
+over the pixels. Here the image is an array of shape $(m,n,3)$, so each pixel
+is a row vector $p^T$. Because $(Mp)^T = p^T M^T$, the whole image is filtered
+by a single matrix product with $M^T$:
+\begin{lstlisting}
+def apply_filter(img, M):
+    return to_uint8(img.astype(np.float64) @ M.T)
+\end{lstlisting}
+The pixels are converted to floating point before the product, so that no
+intermediate result is rounded or overflows. The loop version from the
+project text is also kept (\texttt{apply\_filter\_loop}) and used in Task~4;
+the program checks that both versions give exactly the same image.
+
+\paragraph{\texttt{show(img, title)}.}
+Opens a new figure and displays the image with a title. A single-channel image
+(for example \texttt{redChannel}) is shown in gray levels.
+
+\subsection{Differences from the MATLAB version and verification}
+Besides the indexing from 0 and the operator \texttt{@}, two tasks needed extra
+care. In Task~9 the negative is computed as \texttt{255 - ImJPG}, which never
+leaves $[0,255]$. In Task~14 MATLAB adds 30 to a \texttt{uint8} image with
+saturation, while NumPy would wrap around (250 + 30 = 24); the addition is
+therefore done in floating point and followed by \texttt{to\_uint8}.
+
+The results were checked against the values expected from the project:
+the image size is $m=308$, $n=322$, $l=3$; $\det(\texttt{UserMatrix}) = 0.3025$;
+restoring \texttt{ImJPG\_User} with the inverse filter differs from the
+original image by at most 1 (out of 255); $\det(\texttt{SepiaMatrix})\approx 1.21\times10^{-7}$
+and $\operatorname{cond}(\texttt{SepiaMatrix})\approx 16\,659$. The figures of
+Tasks 3 and 7 match Fig.~5 and Fig.~6 of the project text.

@@ -1,0 +1,1 @@
+Mỗi người upload file partX.py của mình vào đây (TV1: part1.py, TV2: part2.py, ...).
