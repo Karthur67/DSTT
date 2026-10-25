@@ -12,6 +12,15 @@ def to_uint8(x):
 def apply_filter(img, M):
     return to_uint8(img.astype(np.float64) @ M.T)
 
+def apply_filter_loop(img, M):
+    m, n, l = img.shape
+    out = np.zeros((m, n, l), dtype=np.uint8)
+    for i in range(m):
+        for j in range(n):
+            PixelColor = img[i, j, :].astype(np.float64).reshape(3, 1)
+            out[i, j, :] = to_uint8(M @ PixelColor).ravel()
+    return out
+
 def show(img, title):
     plt.figure()
     plt.imshow(img, cmap="gray" if img.ndim == 2 else None, vmin=0, vmax=255)
@@ -34,11 +43,15 @@ GrayMatrix = np.array([
     [1/3, 1/3, 1/3], 
     [1/3, 1/3, 1/3]
 ])
-ImJPG_Gray = apply_filter(ImJPG, GrayMatrix)
+ImJPG_Gray = apply_filter_loop(ImJPG, GrayMatrix)
 show(ImJPG_Gray, "Task 4: Grayscale Image")
 
 # Q1: Explain the purpose of uint8 and double commands in the code above.
-# A1: uint8 stores image channel values as strictly 8-bit integers (0-255). We must use float/double during matrix multiplication to prevent integer overflow and preserve mathematical precision. After all calculations are completed, we convert the data back to uint8 using rounding and clipping functions because standard image display libraries require pixel intensities to be integers strictly within the 0 to 255 range.
+# A1: uint8 stores image channel values as strictly 8-bit integers (0-255).
+#     During the loop, each pixel is converted to float/double before matrix
+#     multiplication to prevent integer overflow and preserve precision. 
+#     After calculations, we convert the data back to uint8 using rounding and 
+#     clipping because standard image display requires integers from 0 to 255.
 
 # %% Task 11: User color-adjusting filter
 UserMatrix = np.array([
@@ -46,11 +59,13 @@ UserMatrix = np.array([
     [0.15, 0.7, 0.15], 
     [0.15, 0.15, 0.7]
 ])
-ImJPG_User = apply_filter(ImJPG, UserMatrix)
+ImJPG_User = apply_filter_loop(ImJPG, UserMatrix)
 show(ImJPG_User, "Task 11: User Filter Image")
 
 # Q4: Explain what the transformation above does to the image.
-# A4: The UserMatrix applies a desaturation and blending effect. By distributing a portion of each channel's intensity to the other channels, it reduces the color contrast between the RGB channels. The overall brightness remains consistent, but colors are pulled closer to a uniform gray tone.
+# A4: The UserMatrix applies a desaturation and blending effect. By distributing 
+#     a portion of each channel's intensity to the other channels, it reduces 
+#     the color contrast between the RGB channels. The overall brightness remains 
+#     consistent, but colors are pulled closer to a uniform gray tone.
 
-# Lệnh hiển thị ảnh (Dùng khi test độc lập file này)
 plt.show()
