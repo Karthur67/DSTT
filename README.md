@@ -27,7 +27,7 @@ pip install -r requirements.txt
 3. Sửa lỗi: upload lại file cùng tên để ghi đè.
 
 ## Quy ước code
-- Đầu file dán phần đầu file chung (import + `to_uint8`, `apply_filter`, `show`) để chạy riêng được.
+- Đầu file dán phần đầu file chung của TV2: chép `01_Parts/part2.py` từ dòng đầu đến hết `m, n, l = ImJPG.shape` (import, `to_uint8`, `apply_filter_loop`, `show`, đọc ảnh). Nhóm chỉ dùng `apply_filter_loop` để lọc.
 - Mỗi task mở đầu bằng `# %% Task X`; dùng đúng tên biến trong đề.
-- Mọi bộ lọc gọi `apply_filter(ImJPG, M)`; không dùng `.astype(np.uint8)` trực tiếp.
+- **Mọi task lọc bằng ma trận** (Task 4, 5, 6, 7, 8, 10, 11, 12, 13) dùng `apply_filter_loop(ImJPG, M)`: vòng lặp từng pixel đúng như code của đề. Không dùng `.astype(np.uint8)` trực tiếp.
 - Câu trả lời tiếng Anh dạng `# Q1:` / `# A1:` ngay dưới task tương ứng.

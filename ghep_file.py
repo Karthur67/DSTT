@@ -42,6 +42,8 @@ REQUIRED_VARS = {
     14: ["ImJPG_Gamma1", "ImJPG_Gamma2"],
 }
 QUESTION_OWNER = {1: 2, 2: 4, 3: 6, 4: 2, 5: 7, 6: 3}
+# Nhóm thống nhất: mọi task lọc bằng ma trận dùng vòng lặp từng pixel như đề (Task 4)
+LOOP_TASKS = {4, 5, 6, 7, 8, 10, 11, 12, 13}
 
 MARKER = re.compile(r"^#\s*%%\s*Task\s+(\d+)\b", re.IGNORECASE)
 SHOW_LINE = re.compile(r"^plt\.show\(\)\s*(#.*)?$")
@@ -139,7 +141,10 @@ def build(out_path):
     if canonical_header is None:
         sys.exit("Cần có 01_Parts/part1.py (chứa phần đầu file chung).")
     base_funcs = defined_functions("\n".join(canonical_header))
-    extra = {k: v for k, v in extra_defs.items() if k not in base_funcs}
+    task_code = "\n".join("\n".join(blk) for _, blk in all_blocks.values())
+    # chỉ chép hàm riêng nếu task thật sự gọi tới (tránh hàm thừa trong file nộp)
+    extra = {k: v for k, v in extra_defs.items()
+             if k not in base_funcs and re.search(rf"\b{k}\s*\(", task_code)}
 
     out = ['"""',
            "Project 3: Matrix multiplication, inversion, and photo filters  (Python version)",
@@ -152,8 +157,10 @@ def build(out_path):
     out += [ln for ln in canonical_header
             if not ln.strip().startswith("# =====") and "Thay bằng bản TV2" not in ln]
     for name, (src_file, src) in extra.items():
-        warnings.append(f"[Cảnh báo] Hàm {name}() chỉ có trong phần đầu của {src_file} - "
-                        f"đã chép vào file ghép, nên báo TV2 thêm vào phần đầu chung")
+        users = sorted({tv(t) for t, (_, blk) in all_blocks.items()
+                        if re.search(rf"\b{name}\s*\(", "\n".join(blk))})
+        warnings.append(f"[Cảnh báo] Có task gọi {name}() nhưng phần đầu chung không có hàm này - "
+                        f"đã tạm chép từ {src_file}; nên dùng hàm chung (apply_filter_loop) - {', '.join(users)}")
         out += ["", "", src]
     out += ["", ""]
 
@@ -172,6 +179,9 @@ def build(out_path):
         for v in REQUIRED_VARS[t]:
             if names_set and v not in names_set:
                 errors.append(f"[Lỗi] Task {t} - thiếu/sai tên biến {v} - {tv(t)} sửa")
+        if t in LOOP_TASKS and "apply_filter_loop" not in code:
+            warnings.append(f"[Cảnh báo] Task {t} ({src_file}): nhóm thống nhất lọc bằng vòng lặp từng pixel, "
+                            f"dùng apply_filter_loop(...) - {tv(t)}")
         for k, ln in enumerate(blk):
             if ".astype(np.uint8)" in ln and not ln.lstrip().startswith("#"):
                 warnings.append(f"[Cảnh báo] Task {t} ({src_file}) dòng {k+1} trong khối: "

@@ -27,7 +27,8 @@ python lab03.py      # daylilies.jpg must be in the same folder
 
 \subsection{Program structure}
 The script has two parts. The first part imports the libraries and defines
-three shared functions used by every task. The second part contains the
+three shared functions used by every task (\texttt{to\_uint8},
+\texttt{apply\_filter\_loop}, \texttt{show}). The second part contains the
 14 tasks in order; each task starts with a cell marker \texttt{\# \%\% Task k},
 so it can be run on its own in VS Code or Spyder. The answers to questions
 Q1--Q6 are written as comments directly under the related task. All figures
@@ -54,6 +55,8 @@ MATLAB & Python & Remark \\
 \texttt{[m,n,l] = size(ImJPG)} & \texttt{m, n, l = ImJPG.shape} & \\
 \texttt{ImJPG(:,:,1)} & \texttt{ImJPG[:, :, 0]} & indices start at 0 \\
 \texttt{A*B} & \texttt{A @ B} & \texttt{A * B} is element-wise \\
+\texttt{for i=1:m ... end} & \texttt{for i in range(m):} & loop over pixels \\
+\texttt{reshape(x,3,1)} & \texttt{x.reshape(3, 1)} & column vector \\
 \texttt{double(x)} & \texttt{x.astype(np.float64)} & \\
 \texttt{uint8(x)} & \texttt{to\_uint8(x)} & own function \\
 \texttt{inv, det, cond} & \texttt{np.linalg.inv, det, cond} & \\
@@ -77,20 +80,27 @@ def to_uint8(x):
     return np.clip(x, 0, 255).astype(np.uint8)
 \end{lstlisting}
 
-\paragraph{\texttt{apply\_filter(img, M)}.}
+\paragraph{\texttt{apply\_filter\_loop(img, M)}.}
 A filter multiplies the color vector $p=[R;G;B]$ of every pixel by a
-$3\times3$ matrix $M$. The MATLAB project does this with two nested loops
-over the pixels. Here the image is an array of shape $(m,n,3)$, so each pixel
-is a row vector $p^T$. Because $(Mp)^T = p^T M^T$, the whole image is filtered
-by a single matrix product with $M^T$:
+$3\times3$ matrix $M$. Following the project text, this is done with two
+nested loops over the pixels: for each pixel the color vector is taken,
+converted to floating point (MATLAB \texttt{double}), reshaped to a
+$3\times1$ column (MATLAB \texttt{reshape}), multiplied by the filter matrix
+and converted back with \texttt{to\_uint8} (MATLAB \texttt{uint8}):
 \begin{lstlisting}
-def apply_filter(img, M):
-    return to_uint8(img.astype(np.float64) @ M.T)
+def apply_filter_loop(img, M):
+    m, n, l = img.shape
+    out = np.zeros((m, n, l), dtype=np.uint8)
+    for i in range(m):
+        for j in range(n):
+            PixelColor = img[i, j, :].astype(np.float64).reshape(3, 1)
+            out[i, j, :] = to_uint8(M @ PixelColor).ravel()
+    return out
 \end{lstlisting}
-The pixels are converted to floating point before the product, so that no
-intermediate result is rounded or overflows. The loop version from the
-project text is also kept (\texttt{apply\_filter\_loop}) and used in Task~4;
-the program checks that both versions give exactly the same image.
+The pixel values are converted to floating point before the product, so that
+no intermediate result is rounded or overflows. All matrix filters in
+\texttt{lab03.py} (Tasks 4--8 and 10--13) use this single function. Filtering
+the $308\times322$ image takes about one second.
 
 \paragraph{\texttt{show(img, title)}.}
 Opens a new figure and displays the image with a title. A single-channel image

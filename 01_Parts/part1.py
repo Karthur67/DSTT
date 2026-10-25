@@ -1,5 +1,5 @@
-# ===================== PHẦN ĐẦU FILE CHUNG =====================
-# (Thay bằng bản TV2 gửi sáng ngày 2 nếu có khác biệt)
+# ======================= SHARED HEADER =======================
+# Helper functions used by all tasks.
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -13,14 +13,9 @@ def to_uint8(x):
     return np.clip(x, 0, 255).astype(np.uint8)
 
 
-def apply_filter(img, M):
-    """Multiply the color vector [R;G;B] of every pixel by the 3x3 matrix M.
-    For an (m, n, 3) array, (img @ M.T)[i, j] == M @ img[i, j]."""
-    return to_uint8(img.astype(np.float64) @ M.T)
-
-
 def apply_filter_loop(img, M):
-    """Same as apply_filter, written with the explicit loop from the project text."""
+    """Multiply the color vector [R;G;B] of every pixel by the 3x3 matrix M,
+    pixel by pixel with an explicit loop, as in the project text."""
     m, n, l = img.shape
     out = np.zeros((m, n, l), dtype=np.uint8)
     for i in range(m):
@@ -35,7 +30,7 @@ def show(img, title):
     plt.imshow(img, cmap="gray" if img.ndim == 2 else None, vmin=0, vmax=255)
     plt.title(title)
     plt.axis("off")
-# ===================== HẾT PHẦN ĐẦU FILE =====================
+# ===================== END OF SHARED HEADER =====================
 
 
 # %% Task 1: Load and display the image
@@ -49,4 +44,4 @@ print(f"m = {m}, n = {n}, l = {l}")
 # l = 3 color channels (R, G, B). Each entry is an integer 0..255 (uint8),
 # so one pixel can take 256^3 (about 16.7 million) different colors.
 
-plt.show()   # chỉ để chạy riêng part1; script ghép sẽ tự bỏ dòng này
+plt.show()
