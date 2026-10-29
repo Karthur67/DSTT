@@ -28,7 +28,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parent
 EXTRA_DIR = ROOT / "05_DuLieuThem"
 OUT = ROOT / "bao_cao" / "figures"
-MAX_SIDE = 600            # thu nhỏ ảnh lớn cho nhanh và nhẹ báo cáo
+MAX_SIDE = 500            # thu nhỏ ảnh lớn cho nhanh (lọc bằng vòng lặp) và nhẹ báo cáo
 
 
 # ---------- cùng hàm với lab03.py ----------
@@ -37,8 +37,15 @@ def to_uint8(x):
     return np.clip(x, 0, 255).astype(np.uint8)
 
 
-def apply_filter(img, M):
-    return to_uint8(img.astype(np.float64) @ M.T)
+def apply_filter_loop(img, M):
+    """Same loop as lab03.py: filter pixel by pixel."""
+    m, n, l = img.shape
+    out = np.zeros((m, n, l), dtype=np.uint8)
+    for i in range(m):
+        for j in range(n):
+            PixelColor = img[i, j, :].astype(np.float64).reshape(3, 1)
+            out[i, j, :] = to_uint8(M @ PixelColor).ravel()
+    return out
 
 
 # ---------- các ma trận trong đề ----------
@@ -59,7 +66,7 @@ MATRICES = {
 
 
 def all_outputs(img):
-    out = {name: apply_filter(img, M) for name, M in MATRICES.items()}
+    out = {name: apply_filter_loop(img, M) for name, M in MATRICES.items()}
     out["Invert"] = 255 - img
     out["Gamma1"] = to_uint8(to_uint8(img.astype(float) ** 0.9).astype(float) + 30)
     out["Gamma2"] = to_uint8(to_uint8(img.astype(float) ** 1.1).astype(float) - 50)
@@ -87,7 +94,7 @@ def load(path):
 
 
 def clipped_fraction(img, M):
-    raw = img.astype(np.float64) @ M.T
+    raw = np.einsum("ij,mnj->mni", M, img.astype(np.float64))   # chỉ để đếm giá trị bị cắt
     return float(np.mean((raw < -0.5) | (raw > 255.5)))
 
 
@@ -105,8 +112,8 @@ def save_grid(name, img, outs):
 
 
 def restore_experiment(name, img, outs):
-    user_inv = apply_filter(outs["User"], np.linalg.inv(MATRICES["User"]))
-    sepia_inv = apply_filter(outs["Sepia"], np.linalg.inv(MATRICES["Sepia"]))
+    user_inv = apply_filter_loop(outs["User"], np.linalg.inv(MATRICES["User"]))
+    sepia_inv = apply_filter_loop(outs["Sepia"], np.linalg.inv(MATRICES["Sepia"]))
     fig, axes = plt.subplots(1, 5, figsize=(15, 3.4))
     panels = [("Original", img), ("User filter", outs["User"]), ("User restored", user_inv),
               ("Sepia filter", outs["Sepia"]), ("Sepia restored", sepia_inv)]

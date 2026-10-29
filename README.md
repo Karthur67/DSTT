@@ -19,7 +19,6 @@ pip install -r requirements.txt
 | `bao_cao/` | Báo cáo LaTeX | TV5 tổng hợp |
 | `ghep_file.py` | Ghép 7 phần thành `lab03.py` | TV1 chạy |
 | `vi_du_them.py` | Tạo hình, bảng cho Phần 4 báo cáo | TV6 chạy |
-| `theo_doi.py` | Theo dõi tiến độ | TV5 chạy |
 
 ## Cách nộp code
 1. Vào `01_Parts/` → **Add file → Upload files** → kéo `partX.py` của mình vào.
@@ -29,5 +28,5 @@ pip install -r requirements.txt
 ## Quy ước code
 - Đầu file dán phần đầu file chung của TV2: chép `01_Parts/part2.py` từ dòng đầu đến hết `m, n, l = ImJPG.shape` (import, `to_uint8`, `apply_filter_loop`, `show`, đọc ảnh). Nhóm chỉ dùng `apply_filter_loop` để lọc.
 - Mỗi task mở đầu bằng `# %% Task X`; dùng đúng tên biến trong đề.
-- **Mọi task lọc bằng ma trận** (Task 4, 5, 6, 7, 8, 10, 11, 12, 13) dùng `apply_filter_loop(ImJPG, M)`: vòng lặp từng pixel đúng như code của đề. Không dùng `.astype(np.uint8)` trực tiếp.
+- **BẮT BUỘC:** mọi task lọc bằng ma trận (Task 4, 5, 6, 7, 8, 10, 11, 12, 13) **chỉ được dùng `apply_filter_loop(ImJPG, M)`**. **Không** dùng `apply_filter`, **không** tự nhân ma trận cho cả ảnh (`img @ M.T`, `np.dot`). Phần đầu file **không được còn hàm `apply_filter`**. `ghep_file.py` sẽ báo **[Lỗi]** kèm tên người nếu vi phạm. Không dùng `.astype(np.uint8)` trực tiếp.
 - Câu trả lời tiếng Anh dạng `# Q1:` / `# A1:` ngay dưới task tương ứng.

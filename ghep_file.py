@@ -121,6 +121,12 @@ def build(out_path):
     canonical_header, all_blocks, extra_defs = None, {}, {}
     for p in parts:
         header, blocks, dup = split_part(p)
+        # Quy định: không file nào được định nghĩa hàm lọc kiểu cũ apply_filter (không vòng lặp)
+        for k, ln in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            if re.match(r"\s*def\s+apply_filter\s*\(", ln):
+                num = re.sub(r"\D", "", p.stem) or "?"
+                errors.append(f"[Lỗi] {p.name} dòng {k}: còn hàm apply_filter (không vòng lặp) - "
+                              f"BẮT BUỘC xóa, chỉ giữ apply_filter_loop - @TV{num} sửa")
         for t in dup:
             errors.append(f"[Lỗi] {p.name} có 2 lần '# %% Task {t}' - {tv(t)} sửa")
         if p.name == "part1.py" or canonical_header is None:
@@ -180,8 +186,15 @@ def build(out_path):
             if names_set and v not in names_set:
                 errors.append(f"[Lỗi] Task {t} - thiếu/sai tên biến {v} - {tv(t)} sửa")
         if t in LOOP_TASKS and "apply_filter_loop" not in code:
-            warnings.append(f"[Cảnh báo] Task {t} ({src_file}): nhóm thống nhất lọc bằng vòng lặp từng pixel, "
-                            f"dùng apply_filter_loop(...) - {tv(t)}")
+            errors.append(f"[Lỗi] Task {t} ({src_file}): BẮT BUỘC lọc bằng apply_filter_loop(...) - {tv(t)} sửa")
+        for k, ln in enumerate(blk):
+            code_ln = ln.split("#", 1)[0]
+            if re.search(r"\bapply_filter\s*\(", code_ln):
+                errors.append(f"[Lỗi] Task {t} ({src_file}) dòng {k+1} trong khối: dùng apply_filter(), "
+                              f"BẮT BUỘC thay bằng apply_filter_loop() - {tv(t)} sửa")
+            elif re.search(r"@\s*\w+\.T\b", code_ln) or "np.dot(" in code_ln or "np.einsum(" in code_ln:
+                errors.append(f"[Lỗi] Task {t} ({src_file}) dòng {k+1} trong khối: tự nhân ma trận cho cả ảnh, "
+                              f"BẮT BUỘC dùng apply_filter_loop() - {tv(t)} sửa")
         for k, ln in enumerate(blk):
             if ".astype(np.uint8)" in ln and not ln.lstrip().startswith("#"):
                 warnings.append(f"[Cảnh báo] Task {t} ({src_file}) dòng {k+1} trong khối: "
