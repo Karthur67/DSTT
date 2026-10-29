@@ -1,0 +1,26 @@
+% =====================================================================
+%  4.2 ADDITIONAL DATA  -  Người viết: TV6
+%  CHỈ SỬA FILE NÀY. Hình và bảng do vi_du_them.py tạo trong figures/.
+% =====================================================================
+\subsection{Additional data built and collected by the group}\label{sec:ex-extra}
+\writer{TV6}
+% Gợi ý:
+%  - Ảnh tổng hợp (bang_mau.png): dải màu thuần + dải xám do nhóm tự xây,
+%    cho thấy rõ từng ma trận làm gì với từng màu, vì sao UserMatrix giữ nguyên xám.
+%  - 2-3 ảnh nhóm tự chụp / tìm (ghi nguồn + giấy phép), bỏ vào 05_DuLieuThem/.
+%  - Nhận xét bảng khôi phục: User khôi phục gần đúng mọi ảnh, Sepia thì không;
+%    ảnh nào bị cắt giá trị nhiều nhất, vì sao.
+\todo{mô tả dữ liệu thêm và nhận xét}
+
+\IfFileExists{figures/luoi_bang_mau.png}{
+\begin{figure}[H]\centering
+\includegraphics[width=0.55\textwidth]{bang_mau.png}
+\caption{Synthetic color chart built by the group: pure hues from dark to bright, and a gray ramp.}\label{fig:chart}
+\end{figure}}{}
+
+\IfFileExists{figures/hinh_du_lieu_them.tex}{\input{figures/hinh_du_lieu_them.tex}}{}
+
+\begin{table}[H]\centering\small
+\caption{Recovering images with the inverse filters (errors on the 0--255 scale) and share of channel values clipped to $[0,255]$.}\label{tab:restore}
+\IfFileExists{figures/bang_khoi_phuc.tex}{\input{figures/bang_khoi_phuc.tex}}{\todo{chạy vi\_du\_them.py}}
+\end{table}

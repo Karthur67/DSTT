@@ -1,0 +1,24 @@
+% =====================================================================
+%  4.1 EXAMPLE IN THE MATERIAL  -  Người viết: TV4
+%  CHỈ SỬA FILE NÀY. Hình và bảng do vi_du_them.py tạo trong figures/.
+% =====================================================================
+\subsection{The example in the material: \texttt{daylilies.jpg}}\label{sec:ex-material}
+\writer{TV4}
+% Gợi ý: mỗi task 1-2 câu + câu trả lời Q1-Q6 (viết lại, không dán từ code),
+% so khớp với Fig. 5, Fig. 6 của đề, số liệu m, n, l, det, cond.
+\todo{trình bày kết quả 14 task}
+
+\IfFileExists{figures/luoi_daylilies.png}{
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{luoi_daylilies.png}
+\caption{Filters of Tasks 4--14 applied to the image in the material.}\label{fig:grid-daylilies}
+\end{figure}
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{khoi_phuc_daylilies.png}
+\caption{Inverting the User filter (Task 12) and the sepia filter (Task 13).}\label{fig:restore-daylilies}
+\end{figure}}{\todo{chạy vi\_du\_them.py khi đã có 00\_DeBai/daylilies.jpg}}
+
+\begin{table}[H]\centering
+\caption{Determinant and condition number of every filter matrix.}\label{tab:matrices}
+\IfFileExists{figures/bang_ma_tran.tex}{\input{figures/bang_ma_tran.tex}}{\todo{chạy vi\_du\_them.py}}
+\end{table}
