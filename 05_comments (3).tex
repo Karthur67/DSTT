@@ -1,0 +1,61 @@
+% sections/05_comments.tex  (TV7)
+
+\section{Comments on the topic}\label{sec:comments}\writer{TV7}
+
+\subsection{What has been accomplished}
+
+We compared our work with the requirements of the project \cite{zemlyanova2020}:
+\begin{itemize}
+  % CHECK BEFORE SUBMISSION (TV1's review, point 3): the sentence "We finished all
+  % 14 tasks ... answered Q1--Q6" is only true when the group has really finished
+  % all 14 tasks. At the time of the review only 8/14 were done. Do not change the
+  % wording now; re-check it against the final work right before submitting.
+  \item \textbf{Code:} We finished all 14 tasks in one Python file,
+    \texttt{lab03.py}, and kept the same variable names as in the project
+    (\texttt{ImJPG}, \texttt{ImJPG\_User}, \texttt{ImJPG\_UserInv}, \dots).
+    All matrix filters use the same loop over pixels as the project code
+    (Section~\ref{sec:code}).
+  \item \textbf{Questions:} We answered Q1--Q6 in the code and explained them
+    again in Section~\ref{sec:ex-material}.
+  \item \textbf{Checking:} Our results match the material: the image size is
+    $308 \times 322 \times 3$, $\det(\texttt{UserMatrix}) = 0.3025$, and the
+    inverse filter recovers \texttt{ImJPG\_User} with a maximum error of 1.
+  \item \textbf{Theory:} The report explains why a filter is a matrix
+    multiplication, when it can be inverted, which filters lose information, and
+    why the sepia filter cannot be inverted in practice.
+\end{itemize}
+
+\subsection{Limitations}
+
+\begin{itemize}
+  \item We only studied filters that change each pixel by itself. Filters that use
+    the pixels around it, like blurring or sharpening, are not included.
+  \item An image only stores whole numbers from 0 to 255. Rounding and clipping
+    make the inverse only approximate, and we studied this mostly by experiments,
+    not by a general formula.
+  \item Filtering with a loop over every pixel, as in the project, is slow in
+    Python (about one second for each filter, even for a small image).
+  \item We used Python instead of MATLAB. Because of rounding, a few pixels may be
+    different from the MATLAB result by 1 level.
+  \item We did not try any better method to recover the sepia image.
+  \item The results were checked on only a small number of images, and we judged
+    the quality mostly by eye.
+\end{itemize}
+
+\subsection{Possible further development}
+
+\begin{itemize}
+  \item \textbf{Affine filters:} Brightness changes and color inversion (Task~9)
+    add a constant, so they are not linear. Writing a color as $[R;G;B;1]$ and
+    using a $4 \times 4$ matrix puts them into one matrix multiplication.
+  \item \textbf{Better recovery:} For an almost singular filter like sepia, we
+    could use least squares or regularization instead of the direct inverse
+    \cite{higham2002}.
+  \item \textbf{Neighbor filters:} Convolution with a small kernel can blur or
+    sharpen an image or find edges \cite{gonzalez2018}.
+  \item \textbf{Other color spaces:} In YCbCr or HSV, brightness and color are
+    separated, so changing the color without changing the brightness is easier
+    \cite{gonzalez2018}.
+  \item \textbf{A small application:} The user types a filter matrix and sees the
+    new image together with its determinant and condition number.
+\end{itemize}

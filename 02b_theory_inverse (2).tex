@@ -1,0 +1,147 @@
+% sections/02b_theory_inverse.tex  (TV7)
+
+\subsection{Determinant, inverse matrix and invertible filters}\label{sec:theory-inverse}\writer{TV7}
+
+As explained in Section~\ref{sec:theory-filters}, a color filter maps $p$ to
+$p' = Mp$. In Task~12 the project asks if we can get the original colors back
+after the filter is applied. To answer this, we need the inverse matrix and the
+determinant.
+
+\paragraph{Inverse matrix.}
+A square matrix $A$ is \emph{invertible} if there is a matrix $A^{-1}$ such that
+$AA^{-1} = A^{-1}A = I$, where $I$ is the identity matrix. If there is no such
+matrix, $A$ is \emph{singular}. If the filter matrix $M$ is invertible, we can
+multiply $p' = Mp$ by $M^{-1}$ and get $M^{-1}p' = p$. So $M^{-1}$ is the inverse
+filter: it brings every color back.
+
+\paragraph{When is a matrix invertible?}
+For an $n \times n$ matrix $A$, the following statements are equivalent
+\cite{strang2016}:
+\begin{itemize}
+  \item $A$ is invertible;
+  \item $\det(A) \neq 0$;
+  \item the rows (or the columns) of $A$ are linearly independent;
+  \item $Ax = 0$ has only the solution $x = 0$.
+\end{itemize}
+For a filter, the last statement means that two different colors never give the
+same result. If they did, we could not know which one was the original.
+
+\paragraph{How to compute.}
+For a $3 \times 3$ matrix, the determinant can be found by expanding along the
+first row:
+\[
+  \det\begin{pmatrix} a & b & c \\ d & e & f \\ g & h & i \end{pmatrix}
+  = a(ei - fh) - b(di - fg) + c(dh - eg)
+\]
+The inverse is $A^{-1} = \frac{1}{\det(A)}\,C^{T}$, where $C$ is the matrix of
+cofactors $C_{ij} = (-1)^{i+j} D_{ij}$ and $D_{ij}$ is the determinant of the
+$2 \times 2$ matrix left after deleting row $i$ and column $j$. We must divide by
+$\det(A)$, so the inverse does not exist when $\det(A) = 0$. In our code we use
+\texttt{np.linalg.inv}, which uses Gaussian elimination instead of this formula
+because it is faster and more accurate \cite{higham2002}.
+
+\paragraph{Example by hand: \texttt{UserMatrix}.}
+The filter in Task~11 is
+\[
+  U = \begin{pmatrix}
+    0.7  & 0.15 & 0.15 \\
+    0.15 & 0.7  & 0.15 \\
+    0.15 & 0.15 & 0.7
+  \end{pmatrix}
+\]
+The cofactors of the first row are
+\[
+  C_{11} = 0.7 \cdot 0.7 - 0.15 \cdot 0.15 = 0.4675, \qquad
+  C_{12} = C_{13} = -(0.15 \cdot 0.7 - 0.15 \cdot 0.15) = -0.0825
+\]
+so
+\[
+  \det(U) = 0.7 \cdot 0.4675 + 0.15 \cdot (-0.0825) + 0.15 \cdot (-0.0825)
+          = 0.32725 - 0.02475 = 0.3025 \neq 0
+\]
+The determinant is not zero, so $U$ is invertible. This is the same number that
+our code prints in Task~12.
+
+Because all diagonal entries of $U$ are equal and all off-diagonal entries are
+equal, all cofactors on the diagonal are $0.4675$ and all the others are
+$-0.0825$. Dividing them by $\det(U)$ gives
+\[
+  \frac{0.4675}{0.3025} = \frac{17}{11} \approx 1.5455, \qquad
+  \frac{-0.0825}{0.3025} = -\frac{3}{11} \approx -0.2727
+\]
+Therefore
+\[
+  U^{-1} = \frac{1}{11}
+  \begin{pmatrix} 17 & -3 & -3 \\ -3 & 17 & -3 \\ -3 & -3 & 17 \end{pmatrix}
+  \approx
+  \begin{pmatrix}
+     1.5455 & -0.2727 & -0.2727 \\
+    -0.2727 &  1.5455 & -0.2727 \\
+    -0.2727 & -0.2727 &  1.5455
+  \end{pmatrix}
+\]
+To check, the first row of $U$ times the first column of $U^{-1}$ is
+$(0.7 \cdot 17 - 0.15 \cdot 3 - 0.15 \cdot 3)/11 = 11/11 = 1$.
+This matches \texttt{InvUserMatrix} in our code.
+
+\paragraph{What the inverse filter does (Q5).}
+In each row of $U$ the numbers add up to 1, so a gray pixel $(g,g,g)$ does not
+change. Other colors get $15\%$ from the two other channels, so they move closer
+to gray and the image looks faded. The rows of $U^{-1}$ also add up to 1, but the
+numbers outside the diagonal are negative. So $U^{-1}$ takes away part of the
+other channels and moves colors away from gray. When we apply it to
+\texttt{ImJPG\_User}, we get the original image back. The difference from
+\texttt{ImJPG} is at most 1, because \texttt{ImJPG\_User} was rounded to whole
+numbers. When we apply $U^{-1}$ to the original \texttt{ImJPG}, the colors become
+stronger. Some values go below 0 or above 255 and are clipped, so this result
+cannot be undone exactly. Figure~\ref{fig:tv7-task12} shows these results.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/TV7_task12.png}
+  \caption{Task 12: the original image, the image after \texttt{UserMatrix}
+    (faded colors), the image recovered with \texttt{InvUserMatrix}, and the
+    inverse filter applied to the original image (stronger colors).}
+  \label{fig:tv7-task12}
+\end{figure}
+
+\paragraph{Singular filters lose information.}
+If $\det(M) = 0$, there is a vector $x \neq 0$ with $Mx = 0$, so the colors $p$
+and $p + x$ give the same result. Three filters in this project are singular:
+\begin{itemize}
+  \item \texttt{GrayMatrix} (all entries are $1/3$) keeps only the average
+    $(R+G+B)/3$. For example, the two different colors $(255,0,0)$ (red) and
+    $(0,255,0)$ (green) both become $(85,85,85)$. Looking at the gray pixel, we
+    cannot know if the original color was red or green.
+  \item \texttt{RedMatrix} keeps only the red channel, so green and blue are
+    lost. For example, $(100,50,200)$ and $(100,0,0)$ both become $(100,0,0)$.
+  \item \texttt{DeleteGreenMatrix} (Task~8) keeps red and blue but deletes green.
+    The colors $(200,30,50)$ and $(200,220,50)$ both become $(200,0,50)$, see
+    Figure~\ref{fig:tv7-task8}.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.65\linewidth]{figures/TV7_task8.png}
+  \caption{Task 8: \texttt{ImJPG} (left) and \texttt{ImJPG\_DeleteGreen}
+    (right). The green channel becomes 0, so the green leaves turn dark purple.}
+  \label{fig:tv7-task8}
+\end{figure}
+
+Figure~\ref{fig:tv7-singular-colors} shows two of these examples. After the
+filter, the two colors in each row look exactly the same.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/TV7_singular_colors.png}
+  \caption{Singular filters send different colors to the same color. Top: red and
+    green both become the same gray with \texttt{GrayMatrix}. Bottom: two colors
+    that differ only in green become the same color with
+    \texttt{DeleteGreenMatrix}.}
+  \label{fig:tv7-singular-colors}
+\end{figure}
+
+For these matrices \texttt{np.linalg.inv} gives an error, and no method can bring
+back the lost channel. Some matrices are invertible but very close to singular,
+like \texttt{SepiaMatrix}; they are studied in
+Section~\ref{sec:theory-cond}.
