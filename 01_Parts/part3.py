@@ -8,9 +8,6 @@ def to_uint8(x):
     x = np.sign(x) * np.floor(np.abs(x) + 0.5)
     return np.clip(x, 0, 255).astype(np.uint8)
 
-def apply_filter(img, M):
-    return to_uint8(img.astype(np.float64) @ M.T)
-
 def apply_filter_loop(img, M):
     m, n, l = img.shape
     out = np.zeros((m, n, l), dtype=np.uint8)
