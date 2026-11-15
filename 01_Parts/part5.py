@@ -16,16 +16,9 @@ def to_uint8(x):
     return np.clip(x, 0, 255).astype(np.uint8)
 
 
-def apply_filter(img, M):
-    """Multiply the color vector [R;G;B] of every pixel by the 3x3 matrix M.
-    Vectorized form of the double for-loop:  new_pixel = M @ pixel.
-    For an (m, n, 3) array, (img @ M.T)[i, j] == M @ img[i, j]."""
-    return to_uint8(img.astype(np.float64) @ M.T)
-
-
 def apply_filter_loop(img, M):
-    """Same as apply_filter, written with the explicit loop from the project
-    text (slow - kept only to show the idea; used in Task 4)."""
+    """Multiply the color vector [R;G;B] of every pixel by the 3x3 matrix M,
+    written with the explicit double loop from the project text."""
     m, n, l = img.shape
     out = np.zeros((m, n, l), dtype=np.uint8)
     for i in range(m):
@@ -101,11 +94,12 @@ ImJPG_Gamma1 = to_uint8(to_uint8(ImJPG.astype(np.float64) ** 0.9).astype(np.floa
 ImJPG_Gamma2 = to_uint8(to_uint8(ImJPG.astype(np.float64) ** 1.1).astype(np.float64) - 50)
 show(ImJPG_Gamma1, "Gamma 0.9, +30")
 show(ImJPG_Gamma2, "Gamma 1.1, -50")
-# Gamma1: x^0.9 on the 0..255 scale compresses the range (255 -> 147), and +30 only
-#   partly compensates, so the image is slightly darker, flatter and low-contrast.
-# Gamma2: x^1.1 stretches the range (anything above ~154 exceeds 255 and is clipped),
-#   and -50 darkens the shadows, so the image is brighter in the highlights with
-#   higher contrast and more saturated colors.
+# Gamma1: x^0.9 compresses the range (255 -> 147) and +30 lifts the black level, so all
+#   output values lie in [30, 177]: shadows are lighter and highlights are lowered,
+#   giving a flatter, low-contrast image (mean brightness about the same).
+# Gamma2: x^1.1 stretches the range (anything above ~154 exceeds 255 and is clipped);
+#   after -50 those pixels all become 205, and dark pixels are pushed down to 0, so the
+#   image has higher contrast and is slightly darker on average.
 # These maps are not of the form M @ [R;G;B], so they are not linear.
 
 
